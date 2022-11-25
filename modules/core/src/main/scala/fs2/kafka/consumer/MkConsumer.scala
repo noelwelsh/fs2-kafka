@@ -37,4 +37,19 @@ object MkConsumer {
         )
       }
     }
+
+  /**
+    * Create a `MkConsumer` instance from a given `KafkaByteConsumer`. This is
+    * most useful for testing, where the method is passed a `MockConsumer`.
+    *
+    * Note that the `MkConsumer` instance will return the same `KafkaByteConsumer`
+    * instance for every call to `apply`, and ignore the settings passed to the `apply` method.
+    */
+  def fromKafkaByteConsumer[F[_]](consumer: KafkaByteConsumer)(implicit F: Sync[F]): MkConsumer[F] =
+    new MkConsumer[F] {
+      def apply[G[_]](settings: ConsumerSettings[G, _, _]): F[KafkaByteConsumer] = F.delay {
+        consumer
+      }
+    }
+
 }
